@@ -1,15 +1,16 @@
-import React, {useState}  from 'react';
+import React, {useState, useContext}  from 'react';
 import {BsFillGearFill as Gear} from "react-icons/bs";
 
 import {GiDeliveryDrone as Drone} from "react-icons/gi";
 import {GiStreetLight as Light} from "react-icons/gi";
 import {GrFormClose as Close} from "react-icons/gr";
+import { ExplauraContext } from '../App';
 
 
 function Settings(props){
 
     const [show, setShow] = useState(false)
-    const {AllMap, setMapLayer, AllLayer, setCustomLayer, customLayer, xplaura, filtre, setFiltre} = props;
+    const {AllMap, setMapLayer, AllLayer, setCustomLayer, customLayer, xplaura, filtre, setFiltre} = useContext(ExplauraContext);
     const Icons = {Drone: <Drone/>, Light : <Light/>}
     // Position for ScreenShot
     const ScreenShot = {Maps:{s:"a",g:"mt0",x:4163,y:2921,z:13}, Weather:{s:"a",g:"mt0",x:32,y:22,z:6}}

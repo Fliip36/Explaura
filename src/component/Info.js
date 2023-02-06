@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { MapContainer, TileLayer} from 'react-leaflet';
 
@@ -13,10 +13,11 @@ import {AiOutlineDoubleRight as Right} from "react-icons/ai";
 import {AiOutlineDoubleLeft as Left} from "react-icons/ai";
 
 import Gpx from './Gpx';
+import { ExplauraContext } from '../App';
 
 function Info(props){
 
-    const {selectInfo, customLayer, setSelectIndex, setGpxData, gpxData, AllIcons, prevGpx, setPrevGpx, setMove, move, Init, setSelectInfo, mapLayer} = props;
+    const {selectInfo, customLayer, setSelectIndex, setGpxData, gpxData, AllIcons, prevGpx, setPrevGpx, setMove, move, Init, setSelectInfo, mapLayer} = useContext(ExplauraContext);
     const RateEmoji = ["😭","😞","😟","😐","🙂","😊","😃","😁","🤩","😍"]; 
     const SlideShowRef = useRef(); // Create A Ref for Marker
     const [allowScroll, setAllowScroll] = useState(false);

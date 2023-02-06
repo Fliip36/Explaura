@@ -2,13 +2,16 @@ import { MapContainer, TileLayer } from 'react-leaflet';
 import Gpx from './Gpx';
 import Markers from './Markers';
 import Position from './Position';
-import React from 'react';
+import React, { useContext } from 'react';
 import * as L from "leaflet";
+import { ExplauraContext } from '../App';
 
 function Map(props) {
+  // use Context Provider 
+  const  {mobile, setUser, filtre, mapLayer, AllIcons, move, customLayer, xplaura, selectIndex, setSelectIndex, setSelectInfo, selectInfo, setGpxData, prevGpx, setPrevGpx} = useContext(ExplauraContext);
 
-  const  {mobile, setUser, filtre, mapLayer, AllIcons, move, customLayer, xplaura, selectIndex, setSelectIndex, setSelectInfo, selectInfo, setGpxData, prevGpx, setPrevGpx} = props;
   const bounds = [[46.785829, 0.796244],[44.049197, 6.198830]];
+  
   return (
         <MapContainer preferCanvas={true} renderer={L.canvas()} minZoom={7} maxZoom={18} maxBounds={bounds} maxBoundsViscosity={0.8} center={{lat:45.592104,lng:2.844146}} zoom={10} scrollWheelZoom={true}>
           

@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { ExplauraContext } from '../App';
 
 function Card(props){
-    const {xplaura, user, filtre, setSelectIndex} = props;
-
+    const {xplaura, user, filtre, setSelectIndex} = useContext(ExplauraContext);
+    console.log(user)
     // const ParseGps = (UserLat, UserLng, MarkerLat, MarkerLng) =>{
     //     return Math.round(MainMap.distance([UserLat,UserLng],[MarkerLat,MarkerLng])/1000);
     // }
