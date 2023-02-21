@@ -1,12 +1,16 @@
 import './App.css';
-import React, {useEffect, useState, createContext}  from 'react';
+import React, {useEffect, useState, createContext, useContext}  from 'react';
 import Map from './component/Map.js'
 import Card from './component/Card.js'
 import Info from './component/Info';
 import * as L from "leaflet";
 import Settings from './component/Settings';
+import { FirebaseContext } from './component/FirebaseContext';
 
 export const ExplauraContext = createContext(null);
+export function GlobalUrl(Url){
+  return `https://firebasestorage.googleapis.com/v0/b/explaura-app.appspot.com/o/${encodeURIComponent(Url)}?alt=media`;
+}
 
 function App() {
   // Init for State
@@ -34,6 +38,10 @@ function App() {
     ],
     "Gpx" : "PuyDeDome"
   } 
+
+  //Context Firebase
+  const { getData } = useContext(FirebaseContext);
+
   // All States
   const [xplaura, setXplaura] = useState({}) // Explaura JSON Data
   const [selectIndex, setSelectIndex] = useState(null); // Select Index for item = 1, 3, 9
@@ -50,18 +58,18 @@ function App() {
   const IconSettings = {
     iconSize: [50, 50],
     iconAnchor: [50/2, 50],    
-    shadowUrl : require("./images/marker-shadow.png"),
+    shadowUrl : GlobalUrl('Markers/marker-shadow.png'),
     shadowAnchor: [50/2, 50], 
     shadowSize:   [50, 50],
     popupAnchor: [0, -50],
   }  
   // Default Icon
   const AllIcons = {
-    ParkingIcon : L.icon({...IconSettings,iconUrl: require("./images/markers/parking.png") }),
-    InterestIcon: L.icon({...IconSettings,iconUrl: require("./images/markers/interest.png") }),
-    StartIcon : L.icon({...IconSettings, iconUrl: require("./images/markers/start.png") }),
-    EndIcon : L.icon({...IconSettings, iconUrl: require("./images/markers/stop.png") }),
-    MoveIcon : L.icon({...IconSettings, className:"MoveIcon", shadowUrl:null ,iconUrl: require("./images/markers/move.png") })
+    ParkingIcon : L.icon({...IconSettings,iconUrl: GlobalUrl('Markers/parking.png') }),
+    InterestIcon: L.icon({...IconSettings,iconUrl: GlobalUrl('Markers/interest.png') }),
+    StartIcon : L.icon({...IconSettings, iconUrl: GlobalUrl('Markers/start.png') }),
+    EndIcon : L.icon({...IconSettings, iconUrl: GlobalUrl('Markers/stop.png') }),
+    MoveIcon : L.icon({...IconSettings, className:"MoveIcon", shadowUrl:null ,iconUrl: GlobalUrl('Markers/move.png') })
   }
   // Layers  
   const CommonLayer = {
@@ -72,8 +80,10 @@ function App() {
     opacity: 0.5,
   }
   const AllLayer = {
-    Drone : L.tileLayer.wms("https://explaura.app/assets/maps/drone/{z}/{x}/{y}.png", {...CommonLayer, Name: "Drone", maxNativeZoom : 10}),
-    Light : L.tileLayer.wms("https://explaura.app/assets/maps/light/{z}/{x}_{y}.png", {...CommonLayer, Name: "Light", maxNativeZoom : 6}),
+    Drone : L.tileLayer.wms("https://www.drone-spot.tech/cache/{z}/{x}/{y}.png", {...CommonLayer, Name: "Drone", maxNativeZoom : 15}),
+    // L.tileLayer.wms("https://explaura.app/assets/maps/drone/{z}/{x}/{y}.png", {...CommonLayer, Name: "Drone", maxNativeZoom : 10}),
+    Light : L.tileLayer.wms("https://darksitefinder.com/maps/tiles/tile_{z}_{x}_{y}.png", {...CommonLayer, Name: "Light", maxNativeZoom : 6}),
+    //L.tileLayer.wms("https://explaura.app/assets/maps/light/{z}/{x}_{y}.png", {...CommonLayer, Name: "Light", maxNativeZoom : 6}),
   }
   // All Map Layers & Common Settings
   const Common = {
@@ -99,29 +109,31 @@ function App() {
   }
     
   // Show or Hide
-  const Show = (selectInfo) ? "ShowInfo" : "HideInfo"
+  const Show = (selectInfo) ? "ShowInfo" : "HideInfo";
 
-  // Update Path Length
+
   useEffect(() => {
+    // Load Leaflet GPX
+    var script = document.createElement('script')
+    script.src = process.env.PUBLIC_URL+"/js/leaflet-gpx.min.js" // Public URL is DOMAIN NAME
+    document.body.appendChild(script);    
+
+    // Get Data From Firebase
+    const fetchData = async () => {
+      const result = await getData('database', 'explaura');
+      setXplaura(result);
+    };
+    fetchData();
+
     // Detect Mobile
     function isMobile(){ (window.innerWidth < 800) ? setMobile(true) : setMobile(false); };    
     // Resize Path On Window Resize
     window.addEventListener('resize', isMobile);
     isMobile()
     return () => window.removeEventListener('resize', isMobile);
-  }, []);
+  }, [getData])
 
-  // Load Json Data
-  useEffect(() => {
-    // Load Leaflet GPX
-    var script = document.createElement('script')
-    script.src = process.env.PUBLIC_URL+"/js/leaflet-gpx.min.js" // Public URL is DOMAIN NAME
-    document.body.appendChild(script);    
-    // Load Xplaura Data
-    Promise.all([fetch(process.env.PUBLIC_URL+'/js/ExplauraData.json')]).then(([Xplaura]) => Promise.all([Xplaura.json()])).then(([XplauraData]) => {
-      setXplaura(XplauraData)      
-    })
-  }, [])
+
 
   // Check if user is on Mobile
   const isMobile = (mobile) ? "isMobile" : "NotMobile";

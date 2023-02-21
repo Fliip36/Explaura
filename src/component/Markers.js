@@ -1,6 +1,7 @@
 import React, {useEffect, useRef}  from 'react';
 import {Popup, Marker, useMap} from 'react-leaflet';
 import * as L from "leaflet";
+import { GlobalUrl } from '../App';
 
 function Markers(props) {
 
@@ -13,14 +14,14 @@ function Markers(props) {
   const IconSettings = {
     iconSize: [IconSize, IconSize],
     iconAnchor: [IconSize/2, IconSize],    
-    shadowUrl : require("../images/marker-shadow.png"),
+    shadowUrl : GlobalUrl(`Markers/marker-shadow.png`),
     shadowAnchor: [IconSize/2, IconSize], 
     shadowSize:   [IconSize, IconSize],
     popupAnchor: [0, -IconSize],
   }
 
   // Icon on Focus
-  const MarkerIconFocus = L.icon({...IconSettings, className: "Focus-Marker", iconUrl: require("../images/markers/interest.png")});
+  const MarkerIconFocus = L.icon({...IconSettings, className: "Focus-Marker", iconUrl: GlobalUrl(`Markers/interest.png`)});
 
   
   // Update Focus Marker on Select Change
@@ -56,7 +57,7 @@ function Markers(props) {
     const Coord = xplaura[item].Coord // Get Each Item Coords
     const Type = xplaura[item].Type;
     const FormatId = item.replaceAll(' ', '').replaceAll("'",""); // "Puy de Dome = PuydeDome" or Puy de L'angle = PuydeLangle
-    const DynamicIcon = L.icon({...IconSettings, iconUrl: require("../images/markers/type/"+Type+".png"),});
+    const DynamicIcon = L.icon({...IconSettings, iconUrl: GlobalUrl(`Markers/Types/${Type}.png`),});
     const ToReturn = (filtre === Type ||filtre === null) && 
     <Marker 
       icon={DynamicIcon} // Icon Style (Dynamic for Type)

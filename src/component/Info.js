@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { MapContainer, TileLayer} from 'react-leaflet';
 
@@ -9,18 +9,18 @@ import {IoIosSpeedometer as Speed} from "react-icons/io";
 import {TbWaveSine as Rythme} from "react-icons/tb";
 import {TbChartLine as Elevation} from "react-icons/tb";
 
-import {AiOutlineDoubleRight as Right} from "react-icons/ai";
-import {AiOutlineDoubleLeft as Left} from "react-icons/ai";
+import useEmblaCarousel from 'embla-carousel-react';
 
 import Gpx from './Gpx';
-import { ExplauraContext } from '../App';
+import { ExplauraContext, GlobalUrl } from '../App';
 
-function Info(props){
+function Info(){
 
     const {selectInfo, customLayer, setSelectIndex, setGpxData, gpxData, AllIcons, prevGpx, setPrevGpx, setMove, move, Init, setSelectInfo, mapLayer} = useContext(ExplauraContext);
     const RateEmoji = ["😭","😞","😟","😐","🙂","😊","😃","😁","🤩","😍"]; 
-    const SlideShowRef = useRef(); // Create A Ref for Marker
-    const [allowScroll, setAllowScroll] = useState(false);
+    const [emblaRef] = useEmblaCarousel();
+    useEmblaCarousel.globalOptions = { loop: true, speed: 100, dragFree: false }
+
     // Check if GPX is Selected and Generate Array [Altitude, Distance]
     const Data = (gpxData) && gpxData.ElevationArray.map((item, index) => {
         const Data = {
@@ -31,7 +31,7 @@ function Info(props){
     })
     const ShowChart = (Data) ? "ShowChart" : "HideChart";
     
-    // HoverChart to get Lat and Lng for Move Marker
+    // HoverChart to get Lat and Lng for Move Marker every 10ms
     var NoSpam;
     const HoverChart = (e) =>{
         clearTimeout(NoSpam);
@@ -51,20 +51,15 @@ function Info(props){
         )
     });
 
-    // Block Scroll LEFT in Slideshow
-    useEffect(()=>{
-        const Slide = SlideShowRef.current;
-        const ScrollHandler = (e) => { e.currentTarget.scrollLeft < 200 ? setAllowScroll(false) : setAllowScroll(true) }
-        Slide.addEventListener('scroll', ScrollHandler);
-        return () => Slide.removeEventListener('scroll', ScrollHandler);
-    },[])
-
-    // Slideshow
-    const Slideshow = (selectInfo) ? selectInfo.Infos.Photos.map((stat, index)=>{
+    // Slidehow V2
+    const EmblaSlideshow = (selectInfo) ? selectInfo.Infos.Photos.map((IdImage, index)=>{
         return(
-            <div key={index} className='Slideshow-img' style={{backgroundImage : `url("image/img/${selectInfo.Name}/${stat}")`}}> </div>
+            <div key={index} className='Slideshow-img embla__slide'>
+                <img alt={selectInfo.Name} src={GlobalUrl(`Images/${selectInfo.Name}/${IdImage}`)} />
+            </div>
         )
-    }) : <div className='Slideshow-img' style={{backgroundImage : `url("image/img/Explaura/1.jpg")`}}> </div>;
+    }) : <div className='Slideshow-img embla__slide' style={{backgroundImage : `url(${GlobalUrl(`Images/Explaura/1.jpg`)})`}}> </div>;
+
 
     // Avis / Note
     const Rating = (selectInfo) && RateEmoji.map((item, index) => {
@@ -84,31 +79,9 @@ function Info(props){
         }
     }
 
-    // Hour to Second && Second to Hours
-    //function hmsToSeconds(s) { return s.split(':')[0]*3600 + s.split(':')[1]*60 + (+s.split(':')[2] || 0)}
-    // function secondsToHMS(secs) { function z(n){return (n<10?'':'') + n}; var sign = secs < 0? '-':''; return sign + z(Math.abs(secs)/3600 |0) + ':' + z((Math.abs(secs)%3600) / 60 |0) + ':' + z(Math.abs(secs)%60); }
-      
-    // La Météo
-    // const WeatherData = (selectInfo) && window.WeatherArray.map((item) => {
-    //     const WeatherLat = parseFloat(item.Coord.lat);
-    //     const WeatherLng = parseFloat(item.Coord.lng);
-    //     const SelectInfoLat = parseFloat(selectInfo.Infos.Coord.lat.toFixed(1));
-    //     const SelectInfoLng = parseFloat(selectInfo.Infos.Coord.lng.toFixed(1));
-    //     const ToReturn = (WeatherLat === SelectInfoLat && SelectInfoLng === WeatherLng ) && 
-    //         (<div className='Info-weather' key="Item">
-    //             <div className='Info-Weather-Status'>
-    //                 <span className='Info-Weather-Desc'>{item.Desc}</span>
-    //                 <span className='Info-Weather-Update'>il y a {secondsToHMS(hmsToSeconds(new Date().toLocaleTimeString()) - (hmsToSeconds(item.Updated))).split(':')[1]} minutes.</span>
-    //             </div>
-    //             <div key="Item" className='Info-Weather-Numbers'>
-    //                 <span className='Info-Weather-Temp'>{parseInt(item.Temp)}°C</span>
-    //                 <img src={`image/weather/google/${item.Icone}.png`} />
-    //             </div>
-    //         </div>)
-    //     return ToReturn;
-    // });
 
-    const SmallWeatherData = (selectInfo) && window.WeatherArray.map((item) => {
+    // Weather Data
+    const SmallWeatherData = (selectInfo & 1 == 3) && window.WeatherArray.map((item) => {
         const WeatherLat = parseFloat(item.Coord.lat);
         const WeatherLng = parseFloat(item.Coord.lng);
         const SelectInfoLat = parseFloat(selectInfo.Infos.Coord.lat.toFixed(1));
@@ -117,12 +90,11 @@ function Info(props){
             (<div className='Info-weather-small' key="Item">
                 <div key="Item" className='Info-Weather-Numbers-small'>
                     <span className='Info-Weather-Temp-small'>{parseInt(item.Temp)}°C</span>
-                    <img alt="Weather Icon" src={`image/weather/google/${item.Icone}.png`} />
+                    <img alt="Weather Icon" src={GlobalUrl(`Weather/Google/${item.Icone}.png`)} />
                 </div>
             </div>)
         return ToReturn;
     })
-
 
     
     // Gpx data Binding
@@ -138,34 +110,25 @@ function Info(props){
         )
     })
 
-    const DesktopScroll = (e) =>{
-        (e.target.classList.contains('Right')) && (SlideShowRef.current.scrollLeft += e.currentTarget.offsetWidth); 
-        (e.target.classList.contains('Left')) &&  (SlideShowRef.current.scrollLeft -= e.currentTarget.offsetWidth);
-    }
+    // Block Parent Scroll
+    const BlockScroll = (e) =>{ document.querySelector('.App ').classList.add('BlockScroll') }
+    const AllowScroll = (e) =>{ document.querySelector('.App ').classList.remove('BlockScroll') }
 
-    return(
+      return(
         <div className="Info-scroller">
             {/* SlideShow */}
-            <div className='Slideshow-container'>
-                {SmallWeatherData}
-                <div className='Desktop-Scroll' onClick={DesktopScroll}>
-                    <div className='Left'>
-                        <Left></Left>
+            <div className='Slideshow-container'  key={selectInfo} ref={emblaRef}>
+                {/* {SmallWeatherData} */}
+                    <div className={`Slideshow-element embla__container`}>
+                        {EmblaSlideshow}
                     </div>
-                    <div className='Right'>
-                        <Right></Right>
-                    </div>
-                </div>
-                    <div className={`Slideshow-element ${allowScroll}`} ref={SlideShowRef} style={{backgroundImage : `url(image/img/Explaura.jpg)`}}>
-                        {Slideshow}
-                    </div>
-                <img alt="Smoke" className='Slideshow-smoke' src='image/theme/smoke/smoke.png'></img>
+               <img alt="Smoke" className='Slideshow-smoke' src={GlobalUrl('Theme/Assets/smoke.png')}></img>
             </div>
             {/* Header */}
             <div className='Info-container'>
                 <div className='Info-Header'>                
                     <div className='Info-type'>
-                        <img alt={selectInfo?.Infos.Type} src={`image/theme/type/${selectInfo?.Infos.Type || Init.Type}.png`}></img>
+                        <img alt={selectInfo?.Infos.Type} src={GlobalUrl(`Theme/Type/${selectInfo?.Infos.Type || Init.Type}.png`)}></img>
                     </div>
 
                     <div className='Info-data'>
@@ -208,14 +171,14 @@ function Info(props){
 
                 <div className='Info-button'></div>
 
-                <div className={`Info-chart ${ShowChart}`}>
+                <div onTouchStart={BlockScroll} onTouchEnd={AllowScroll} className={`Info-chart ${ShowChart}`}>
                     {Data && <ResponsiveContainer>
                     <AreaChart onMouseMove={HoverChart} data={Data} margin={{top: 10,right: 30,left: 0,bottom: 0}}>
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis scale="auto" dataKey="Distance" type="number" axisLine={false} unit="km" tickLine={false}  domain={['dataMin', 'dataMax']}/>
                         <YAxis dataKey="Altitude" type="number" axisLine={false} unit="m"  tickLine={false} domain={['dataMin', 'dataMax']}/>
                         <Tooltip content={<CustomTooltip />} formatter={(value, name, props) => [value+"m", name]}/>
-                        <Area type="monotone" dataKey="Altitude" stroke="#2b2b2b" fill="#2b2b2b" />
+                        <Area type="monotone" dataKey="Altitude" stroke="#2b2b2b" fill="#2b2b2b"/>
                     </AreaChart>
                     </ResponsiveContainer>
                     }
@@ -225,7 +188,7 @@ function Info(props){
                 {selectInfo && <div className='Info-note'>
                     <div className='Info-Review'>
                         <div className='Info-Review-User'>
-                            <img alt="User" src='https://theme.lucasarts.fr/user.jpg'/> 
+                            <img alt="User" src={GlobalUrl('Theme/Type/user.png')}/> 
                         </div>
                         <div className='Info-Review-Text'>
                             {selectInfo?.Infos.Review || Init.Review}
@@ -234,7 +197,9 @@ function Info(props){
                     <div className='Info-Smiley'>{Rating}</div>
                 </div> 
                 }    
-
+            { selectInfo && 
+                <a className='Info-DepartLink' rel="noreferrer" href={`https://www.google.com/maps/place/${selectInfo.Infos.Parking.lat}+${selectInfo.Infos.Parking.lng}`} target="_blank">Aller au point de départ</a>
+            }
             </div>
          </div> 
     )

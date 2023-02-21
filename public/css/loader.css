@@ -8,7 +8,7 @@
     top: 0;
     bottom: 0;
     right: 0;
-    animation: Loader 3.5s forwards;
+    animation: Loader .35s forwards;
 }
 
 .Center-Loader{

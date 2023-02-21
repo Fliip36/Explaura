@@ -4,7 +4,7 @@ import {BsFillGearFill as Gear} from "react-icons/bs";
 import {GiDeliveryDrone as Drone} from "react-icons/gi";
 import {GiStreetLight as Light} from "react-icons/gi";
 import {GrFormClose as Close} from "react-icons/gr";
-import { ExplauraContext } from '../App';
+import { ExplauraContext, GlobalUrl } from '../App';
 
 
 function Settings(props){
@@ -60,7 +60,7 @@ function Settings(props){
     Object.keys(xplaura).map((item, index)=>{         
         const Type = xplaura[item].Type;
         const Active = (filtre === Type) ? "Active" : "";
-        const Image = require("../images/markers/type/"+Type+".png"); // Allow to use Require Image
+        const Image = GlobalUrl(`Markers/Types/${Type}.png`)//require("../images/markers/type/"+Type+".png"); // Allow to use Require Image
         const Item = <div onClick={FiltersEnable} key={index} id={`Filter-${Type}`} className={`Settings-Filtre-Icon ${Active}`} style={{backgroundImage : `url("${Image}")`}}></div>
         !UniqueType[Type] && (UniqueType[Type]=Item);
         return Item;
