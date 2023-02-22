@@ -13,6 +13,8 @@ import useEmblaCarousel from 'embla-carousel-react';
 
 import Gpx from './Gpx';
 import { ExplauraContext, GlobalUrl } from '../App';
+import Weather from './Weather';
+import Like from './Like';
 
 function Info(){
 
@@ -79,23 +81,6 @@ function Info(){
         }
     }
 
-
-    // Weather Data
-    const SmallWeatherData = (selectInfo & 1 == 3) && window.WeatherArray.map((item) => {
-        const WeatherLat = parseFloat(item.Coord.lat);
-        const WeatherLng = parseFloat(item.Coord.lng);
-        const SelectInfoLat = parseFloat(selectInfo.Infos.Coord.lat.toFixed(1));
-        const SelectInfoLng = parseFloat(selectInfo.Infos.Coord.lng.toFixed(1));
-        const ToReturn = (WeatherLat === SelectInfoLat && SelectInfoLng === WeatherLng ) && 
-            (<div className='Info-weather-small' key="Item">
-                <div key="Item" className='Info-Weather-Numbers-small'>
-                    <span className='Info-Weather-Temp-small'>{parseInt(item.Temp)}°C</span>
-                    <img alt="Weather Icon" src={GlobalUrl(`Weather/Google/${item.Icone}.png`)} />
-                </div>
-            </div>)
-        return ToReturn;
-    })
-
     
     // Gpx data Binding
     const BindGpxData = (gpxData) && ['Heart','Distance','TotalTime','MinutePerKm','GainElevation','MovingSpeedUpdated'].map((item, index)=>{
@@ -116,15 +101,14 @@ function Info(){
 
       return(
         <div className="Info-scroller">
-            {/* SlideShow */}
+            <Like />
+            <Weather />
             <div className='Slideshow-container'  key={selectInfo} ref={emblaRef}>
-                {/* {SmallWeatherData} */}
                     <div className={`Slideshow-element embla__container`}>
                         {EmblaSlideshow}
                     </div>
                <img alt="Smoke" className='Slideshow-smoke' src={GlobalUrl('Theme/Assets/smoke.png')}></img>
             </div>
-            {/* Header */}
             <div className='Info-container'>
                 <div className='Info-Header'>                
                     <div className='Info-type'>
@@ -141,7 +125,6 @@ function Info(){
                 </div>
                  {/* Map */}
                 <div className='Info-map' id='Info-map'>
-
                     <MapContainer center={{lat:45.592104,lng:2.844146}} zoom={13} scrollWheelZoom={true}>
                         <TileLayer maxNativeZoom={mapLayer.Options.maxNativeZoom} key={mapLayer.Url} url={mapLayer.Url}/>
                         { 
@@ -157,8 +140,7 @@ function Info(){
                                 move={move}
                                 setSelectInfo={setSelectInfo}
                                 setSelectIndex={setSelectIndex}
-                            />    
-                                    
+                            />                                        
                     </MapContainer>
 
                 </div>

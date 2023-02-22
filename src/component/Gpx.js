@@ -80,7 +80,7 @@ function Gpx(props) {
     useEffect(()=>{ 
         const Id = TheMap._leaflet_id; // Get ID of THIS map
         const ThisLayer = prevGpx[Id]; // Get the PREVGPX based on ID THIS map
-        console.log("Map Id :"+TheMap._leaflet_id);
+        // console.log("Map Id :"+TheMap._leaflet_id);
         (ThisLayer && TheMap.hasLayer(ThisLayer)) && ThisLayer.removeFrom(TheMap); // If Layer Exist REMOVE from the map
         
         const GpxNameFormat = selectInfo?.Infos.Gpx; // Check if SelectInfo Exist and if has GPX
@@ -89,7 +89,7 @@ function Gpx(props) {
             polyline_options: { color: "#f4ff00" , weight: 3, opacity: 1.0, className:`PathDesktop PathDesktop-${Id}`},
             marker_options: { startIconUrl: AllIcons.StartIcon.options.iconUrl, endIconUrl: AllIcons.EndIcon.options.iconUrl, shadowUrl: null, iconSize: [50,50] }
         }).on('loaded', function(e) {
-            console.log(mobile);
+            // console.log(mobile);
             (mobile === undefined || mobile) ? 
             TheMap.fitBounds(e.target.getBounds(), {paddingTopLeft: [0, 0]}) : // Zoom to GPX  Mobile   
             TheMap.fitBounds(e.target.getBounds(), {paddingTopLeft: [400, 0]}); // Zoom to GPX  Desktop    

@@ -3,7 +3,7 @@ import { ExplauraContext, GlobalUrl } from '../App';
 
 function Card(props){
     const {xplaura, user, filtre, setSelectIndex} = useContext(ExplauraContext);
-    console.log(`Position User :${user.lat} ${user.lng}`)
+    // console.log(`Position User :${user.lat} ${user.lng}`)
 
     // Distance from user to Point
     function distance(lat1, lon1, lat2, lon2) {

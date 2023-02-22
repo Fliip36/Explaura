@@ -218,6 +218,32 @@ html, body{
   overflow-x: hidden;
 }
 
+.Infos-Like{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    z-index: 500;
+    backdrop-filter: blur(33px);
+    -webkit-backdrop-filter: blur(33px);
+    padding: 5px 10px;
+    border-radius: 10px;
+    background-color: rgb(0 0 0 / 10%);
+}
+
+.Infos-Like .Heart{
+  color: #dd0e34;
+  margin-left: 4px;
+  font-size: 1.2rem;
+}
+
+.Infos-Like-Value{
+  color: white;
+  text-shadow: 0px 0px 4px rgb(0 0 0 / 50%);
+}
+
 .Info-weather {
   display: flex;
   align-items: center;
@@ -266,7 +292,7 @@ html, body{
   position: absolute;
   left: 10px;
   top: 10px;
-  z-index: 3;
+  z-index: 500;
   backdrop-filter: blur(33px);
   -webkit-backdrop-filter: blur(33px);
   padding: 5px 10px;
@@ -1069,7 +1095,7 @@ tspan {
   }
 
   .Horizontal .Settings-Button{
-    position: fixed;
+    /* position: fixed; */
   }
 
   .Settings-Menu {

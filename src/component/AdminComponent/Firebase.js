@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, doc, getDoc, updateDoc, increment } from 'firebase/firestore';
+import { getFirestore, collection, doc, getDoc, setDoc, updateDoc  } from 'firebase/firestore';
 import { getAuth, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { getStorage, ref, uploadBytes, getDownloadURL, listAll  } from 'firebase/storage';
 
@@ -40,7 +40,7 @@ const getData = async (mycollection, mydoc) => {
     try {
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
-        //console.log('Document data:', docSnap.data());
+        console.log('Document data:', docSnap.data());
         return docSnap.data();
       } else {
         console.log('No such document!');
@@ -52,33 +52,22 @@ const getData = async (mycollection, mydoc) => {
 
 // Add data to Database
 const addData = async (myJSON ,mycollection, mydoc) => {
-    const docRef = doc(collection(db, mycollection), mydoc);  
+    const docRef = doc(collection(db, mycollection), mydoc);
+  
     try {
       await updateDoc(docRef, myJSON);
       console.log("Document successfully written!");
     } catch (error) {
       console.error("Error writing document: ", error);
     }
-};
-
-// Update Like : 
-const UpdateLike = async (mycollection, mydoc, mymap) =>{
-  // Récupérer la référence au document "explaura"
-  const docRef = doc(db, mycollection, mydoc);
-  const Path = `${mymap}.Like`;
-  // Incrémenter la valeur de la propriété "Like"
-  await updateDoc(docRef, {
-    [Path]: increment(1)
-  });
-  console.log('Updated Like !')
-}
+  };
 
 
 //Upload a file  
 const uploadFile = async (file, folder) => {
-  const storageRef = ref(storage, folder+'/' + file.name);
-  await uploadBytes(storageRef, file);
-  console.log('Fichier téléchargé avec succès !');
+const storageRef = ref(storage, folder+'/' + file.name);
+await uploadBytes(storageRef, file);
+console.log('Fichier téléchargé avec succès !');
 }
 
 // Get Files URL
@@ -90,6 +79,6 @@ const getFilesDownloadURLs = async (folderPath) => {
       return url;
     }));
     return urls;
-};
+  };
 
-export { db, auth, storage, logInWithEmailAndPassword, logOut, getData, addData, uploadFile, getFilesDownloadURLs, UpdateLike };
+export { db, auth, storage, logInWithEmailAndPassword, logOut, getData, addData, uploadFile, getFilesDownloadURLs };

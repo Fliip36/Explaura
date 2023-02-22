@@ -44,6 +44,7 @@ function App() {
 
   // All States
   const [xplaura, setXplaura] = useState({}) // Explaura JSON Data
+  const [weatherData, setWeatherData] = useState(null);
   const [selectIndex, setSelectIndex] = useState(null); // Select Index for item = 1, 3, 9
   const [selectInfo, setSelectInfo] = useState(null); // Selected Item Informations base on Index 
   const [gpxData, setGpxData] = useState(); // Save GPX Data To a State
@@ -125,12 +126,18 @@ function App() {
     };
     fetchData();
 
+    // Get Weather
+    fetch('https://api.lucasarts.fr/weather/explaura').then(response => response.json()).then(data => setWeatherData(data))
+    .catch(error => console.error(error));
+
     // Detect Mobile
     function isMobile(){ (window.innerWidth < 800) ? setMobile(true) : setMobile(false); };    
     // Resize Path On Window Resize
     window.addEventListener('resize', isMobile);
     isMobile()
+
     return () => window.removeEventListener('resize', isMobile);
+    
   }, [getData])
 
 
@@ -141,6 +148,7 @@ function App() {
   return (
     <ExplauraContext.Provider value={{ 
       xplaura, Init, AllIcons, AllLayer, AllMap,
+      weatherData, setWeatherData,
       gpxData, setGpxData, 
       selectInfo, setSelectInfo, 
       selectIndex, setSelectIndex, 
